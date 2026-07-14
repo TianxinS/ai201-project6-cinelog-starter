@@ -82,7 +82,7 @@ The user behavior argument also favors date-added: a watchlist is a queue of thi
 
 **How I resolved it:** I kept main's version of `Film`, `User`, and `CollectionEntry` (with `film_id` as `db.String(36)`) unchanged, then added `WatchlistEntry` with `film_id = db.Column(db.String(36), ...)` to match the UUID convention. I also added the `film = db.relationship("Film", lazy=True)` backref that was needed for `entry.film.to_dict()` to work in `get_watchlist()`.
 
-**How I verified no conflict remains:** `git status` shows a clean working tree with no conflict markers. `pytest tests/ -v` passes all 12 tests, including the sort-order test which exercises the `entry.film` relationship through a full DB round-trip.
+**How I verified no conflict remains:** `git status` shows a clean working tree with no conflict markers. `pytest tests/ -v` passes all 12 tests, including the sort-order test which exercises the `entry.film` relationship through a full DB round-trip. The UUID column type change is captured in its own commit: `fix: update WatchlistEntry film_id to String(36) to match UUID refactor on main`.
 
 ---
 
@@ -105,13 +105,17 @@ Added a `public` parameter (default `True`) to `add_to_watchlist()` and exposed 
 ## git log --oneline screenshot
 
 ```
+60c59d0 fix: update WatchlistEntry film_id to String(36) to match UUID refactor on main
+edb6939 docs: add pr-response.md with design decisions and PR description
 22ec856 test: add watchlist tests for nonexistent film, deduplication, remove, sort order, and visibility
 eb88500 feat: add remove_from_watchlist function and public visibility parameter to add_to_watchlist
 af765d3 fix: rename save_to_watchlist to add_to_watchlist and add deduplication check
 9846768 fix: replace deprecated Film.query.get with db.session.get in collection service
 dbdc5c0 feat: add WatchlistEntry model and register watchlist blueprint
-bbe206c Merge pull request #2 from ascherj/chore/add-gitignore  ← main
+bbe206c refactor: migrate film IDs from integer to UUID  ← main
 ```
+
+7 commits on feature/watchlist above main. No merge commits — linear history after rebase on `origin/main`.
 
 ---
 
